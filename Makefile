@@ -5,11 +5,11 @@ clean:
 	npm run clean
 
 .PHONY: install
-install: 
+install:
 	npm install
 
 .PHONY: build
-build: 
+build:
 	npm run build
 
 .PHONY: test
@@ -21,12 +21,12 @@ coverage: build
 	npm run coverage
 
 .PHONY: all
-all: 
+all:
 	npm run all
 
 .PHONY: release
 release: all
-	npm prune --production 
+	npm prune --production
 
 .PHONY: semantic-release
 semantic-release:
@@ -58,4 +58,4 @@ tag-major: check-version
 check-version:
 ifndef VERSION
 	$(error VERSION not defined)
-endif 
+endif

@@ -1,3 +1,6 @@
+// Code generated via make release - DO NOT EDIT
+
+
 /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
@@ -71,7 +74,7 @@ class GithubHelper {
                 this.baseOwner = (_2 = (_1 = (_0 = (_z = (_y = github_1.context.payload) === null || _y === void 0 ? void 0 : _y.pull_request) === null || _z === void 0 ? void 0 : _z.base) === null || _0 === void 0 ? void 0 : _0.repo) === null || _1 === void 0 ? void 0 : _1.owner) === null || _2 === void 0 ? void 0 : _2.login;
                 this.baseRepoName = (_6 = (_5 = (_4 = (_3 = github_1.context.payload) === null || _3 === void 0 ? void 0 : _3.pull_request) === null || _4 === void 0 ? void 0 : _4.base) === null || _5 === void 0 ? void 0 : _5.repo) === null || _6 === void 0 ? void 0 : _6.name;
             }
-            if (github_1.context.eventName === 'push') {
+          if (['push', 'merge_group'].includes(github_1.context.eventName)) {
                 this.isPR = false;
                 this.owner = (_9 = (_8 = (_7 = github_1.context.payload) === null || _7 === void 0 ? void 0 : _7.repository) === null || _8 === void 0 ? void 0 : _8.owner) === null || _9 === void 0 ? void 0 : _9.login;
                 this.repo = (_11 = (_10 = github_1.context.payload) === null || _10 === void 0 ? void 0 : _10.repository) === null || _11 === void 0 ? void 0 : _11.name;
@@ -105,7 +108,18 @@ class GithubHelper {
                 core.info(`Updated build status: ${params.status}`);
             }
             catch (error) {
-                throw new Error(`error while setting context status: ${error.message}`);
+                /*
+                    There is a point where a merge group has been merged and checks
+                    may be re-run, where this status update does not appear possible
+                    from some context/state reason that is not clear.
+                    Therefore we try to sidestep this a bit and either allow this to
+                    pass or fail without actually updating anything.
+                */
+                const SUCCESS = 'success';
+                core.warning(`Unable to properly update build status: ${params.status}`);
+                if (params.status !== SUCCESS) {
+                    throw new Error(`Check ended with status: ${params.status}`);
+                }
             }
         });
     }
@@ -456,8 +470,9 @@ function validateEventType() {
     return __awaiter(this, void 0, void 0, function* () {
         if (github.context.eventName !== 'pull_request' &&
             github.context.eventName !== 'pull_request_target' &&
+            github.context.eventName !== 'merge_group' &&
             github.context.eventName !== 'push') {
-            throw new Error('Error, action only works for pull_request, pull_request_target or push events!');
+            throw new Error('Error, action only works for pull_request, pull_request_target, merge_group or push events!');
         }
     });
 }

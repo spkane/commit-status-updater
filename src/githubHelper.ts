@@ -34,7 +34,11 @@ class GithubHelper {
   }
 
   private async initialize(): Promise<void> {
-    if (['pull_request', 'pull_request_target'].includes(context.eventName)) {
+    if (
+      ['pull_request', 'pull_request_target'].includes(
+        context.eventName
+      )
+    ) {
       this.isPR = true
       this.owner = context.payload?.pull_request?.head?.repo?.owner?.login
       this.repo = context.payload?.pull_request?.head?.repo?.name
@@ -46,7 +50,11 @@ class GithubHelper {
       this.baseRepoName = context.payload?.pull_request?.base?.repo?.name
     }
 
-    if (context.eventName === 'push') {
+    if (
+      ['push', 'merge_group'].includes(
+        context.eventName
+      )
+    ) {
       this.isPR = false
       this.owner = context.payload?.repository?.owner?.login
       this.repo = context.payload?.repository?.name
@@ -74,8 +82,9 @@ class GithubHelper {
         state: params.status,
         target_url: params.url
       })
-      core.info(`Updated build status: ${params.status}`)
+      core.info(`Updated build status for ${params.name}: ${params.status}`)
     } catch (error) {
+      core.warning(`Unable to properly update build status for ${params.name}: ${params.status}`)
       throw new Error(
         `error while setting context status: ${(error as Error).message}`
       )

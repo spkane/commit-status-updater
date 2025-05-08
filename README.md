@@ -9,9 +9,10 @@ A simple Github Action that allows us to update the status of a commit.
 
 GitHub does not update the status of a commit when running workflow and therefore tools that rely on the context/status of a given commit are not compatible with it.
 
-Currently the action supports `pull_request`, `pull_request_target` and `push` events:
+Currently the action supports `pull_request`, `pull_request_target`, `merge_group`, and `push` events:
+
 * When the event is `pull_request` or `pull_request_target`, the action will set the status to the last commit in the pull request at the moment the workflow was triggered.
-* When the event is `push`, the action will set the status to the last commit pushed at the moment the workflow was triggered.
+* When the event is `push` or `merge_group`, the action will set the status to the last commit pushed at the moment the workflow was triggered.
 
 ## Input Parameters
 
@@ -35,7 +36,7 @@ If set to `error` it will set status commit `error`.
 
 ## Input Parameters specific to `pull_request` event
 
-_These parameters are all optional and are used only for pull requests_
+_These parameters are all optional and are used only for pull requests._
 
 | Name | Description |
 |---|---|
@@ -52,11 +53,11 @@ By default, if we don't add `permissions` to the workflow or the job, the action
 * If we just want to set the status commit we need to be sure the job (or the whole workflow) has the permission: `statuses: write`
 * If we want to add a comment we need to be sure the job (or the whole workflow) has the permissions: `pull-requests: write`
 
-## Examples 
+## Examples
 
 ### Action sets push commit to pending status
 
-```
+```yaml
 name: Test
 
 on: [push]
@@ -71,12 +72,12 @@ jobs:
 
 ### Action sets push commit to pending status with specific permissions
 
-```
+```yaml
 name: Test
 
 on: [push]
 
-permissions: 
+permissions:
   statuses: write
 
 jobs:
@@ -87,10 +88,9 @@ jobs:
     - uses: ouzi-dev/commit-status-updater@v2
 ```
 
-
 ### Action sets push commit to pending status with custom name
 
-```
+```yaml
 name: Test
 
 on: [push]
@@ -107,7 +107,7 @@ jobs:
 
 ### Action sets push commit to pending status on start, and updates check at the end of the workflow
 
-```
+```yaml
 name: Test
 
 on: [push]
@@ -126,7 +126,7 @@ jobs:
 
 ### Action sets pull request commit to pending status without comment
 
-```
+```yaml
 name: Test
 
 on: [pull_request]
@@ -141,7 +141,7 @@ jobs:
 
 ### Action sets pull request commit to error status without comment
 
-```
+```yaml
 name: Test
 
 on: [pull_request]
@@ -158,7 +158,7 @@ jobs:
 
 ### Action sets pull request commit to pending status with comment, and updates check and adds comment at the end of the workflow
 
-```
+```yaml
 name: Test
 
 on: [pull_request]
@@ -180,12 +180,12 @@ jobs:
 
 ### Action sets pull request commit to pending status with comment, and updates check and adds comment at the end of the workflow with specific permissions
 
-```
+```yaml
 name: Test
 
 on: [pull_request]
 
-permissions: 
+permissions:
   statuses: write
   pull-requests: write
 
@@ -206,7 +206,7 @@ jobs:
 
 ### Action with custom hold comments
 
-```
+```yaml
 name: Test
 
 on: [pull_request]
@@ -224,10 +224,10 @@ jobs:
         successComment: "action success!"
         failComment: "action failed!"
 ```
- 
+
 ### Action no comments, set commit to "error" status and set url, description and specific name
 
-```
+```yaml
 name: Test
 
 on: [pull_request]
@@ -247,7 +247,7 @@ jobs:
 
 ### Action with specific token and setting status check in commits in forks
 
-```
+```yaml
 name: Test
 
 on: [pull_request]
@@ -265,12 +265,12 @@ jobs:
 
 ## Integration with Prow
 
-An example is [Prow](https://github.com/kubernetes/test-infra/tree/master/prow#readme) which uses the Github Status API to read the status of a given commit. 
+An example is [Prow](https://github.com/kubernetes/test-infra/tree/master/prow#readme) which uses the Github Status API to read the status of a given commit.
 Using this actions you can tell tide to not skip optional contexts and effectively wait for a GitHub Workflow to pass before merging.
 
 ### Example with Tide
 
-```
+```yaml
 tide:
   context_options:
     # Treat unknown contexts as required
