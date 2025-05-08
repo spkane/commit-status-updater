@@ -40,6 +40,9 @@
     "@octokit/webhooks": "^10.3.0",
     "@octokit/webhooks-types": "^6.5.0",
     "@vercel/ncc": "^0.34.0",
+    "cacheable-request": "^10.2.7",
+    "http-cache-semantics": "^4.1.1",
+    "json5": "^1.0.2",
     "npm-check-updates": "^16.3.14",
     "uuid": "^9.0.0"
   },
